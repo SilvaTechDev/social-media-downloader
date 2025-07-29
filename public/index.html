@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silva Tech Inc | Advanced Media Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2a5a78;
+            --secondary: #38b6ff;
+            --accent: #00e676;
+            --dark: #1e3a4d;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #ff6b6b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background grid */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            animation: gridScroll 120s linear infinite;
+        }
+        
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes gridScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 1000px; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            animation: fadeIn 1s ease-out;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            animation: pulse 2s infinite;
+            text-shadow: 0 0 15px rgba(56, 182, 255, 0.7);
+        }
+        
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .tagline::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--secondary), transparent);
+            margin: 15px auto;
+            border-radius: 3px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.8s ease-out;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: all 0.5s ease;
+        }
+        
+        .card:hover {
+            transform: perspective(1000px) rotateX(5deg) translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background: var(--secondary);
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(56, 182, 255, 0.4);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        #singleUrl {
+            width: 100%;
+            padding: 18px 25px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #singleUrl:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px var(--secondary), inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #batchUrls {
+            width: 100%;
+            min-height: 150px;
+            padding: 18px 25px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            resize: vertical;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #batchUrls:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px var(--secondary), inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview-container {
+            display: none;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .thumbnail {
+            width: 100%;
+            border-radius: 10px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: linear-gradient(45deg, #1e3a4d, #2a5a78);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .platform-tag {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(56, 182, 255, 0.3);
+        }
+        
+        .options-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .option-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .option-card i {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .option-card.active {
+            background: var(--secondary);
+            color: var(--dark);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(56, 182, 255, 0.4);
+        }
+        
+        .option-card.active i {
+            color: var(--dark);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 50px;
+            background: var(--secondary);
+            color: var(--dark);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 200px;
+            box-shadow: 0 6px 20px rgba(56, 182, 255, 0.4);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(56, 182, 255, 0.6);
+        }
+        
+        .download-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .download-btn.audio {
+            background: var(--accent);
+            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.4);
+        }
+        
+        .download-btn.audio:hover {
+            box-shadow: 0 10px 25px rgba(0, 230, 118, 0.6);
+        }
+        
+        .download-btn.image {
+            background: #6bce70;
+            box-shadow: 0 6px 20px rgba(107, 206, 112, 0.4);
+        }
+        
+        .download-btn.image:hover {
+            box-shadow: 0 10px 25px rgba(107, 206, 112, 0.6);
+        }
+        
+        .downloads-container {
+            margin-top: 40px;
+        }
+        
+        .download-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideUp 0.5s ease-out;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .download-item.completed {
+            background: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        
+        .download-item.error {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--error);
+        }
+        
+        .progress-container {
+            flex: 1;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                var(--secondary), 
+                var(--accent));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+                rgba(255,255,255,0.1),
+                rgba(255,255,255,0.3),
+                rgba(255,255,255,0.1));
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+        
+        /* Notification system */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(200%);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 5px solid var(--success);
+        }
+        
+        .notification.error {
+            border-left: 5px solid var(--error);
+        }
+        
+        .notification.warning {
+            border-left: 5px solid var(--warning);
+        }
+        
+        /* Features section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .download-btn {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .option-card {
+                min-width: 80px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating particles -->
+    <div id="particles"></div>
+    
+    <!-- Notification container -->
+    <div id="notification" class="notification"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-cloud-download-alt logo-icon"></i>
+                <h1>Silva Tech Inc</h1>
+            </div>
+            <p class="tagline">Premium Social Media Downloader - Fast, Secure, Unlimited</p>
+        </header>
+        
+        <main>
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" data-tab="single">Single Download</div>
+                    <div class="tab" data-tab="batch">Batch Download</div>
+                </div>
+                
+                <div id="singleTab">
+                    <div class="input-group">
+                        <label for="singleUrl">Enter Social Media URL</label>
+                        <input type="url" id="singleUrl" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
+                    </div>
+                    
+                    <div id="previewContainer" class="preview-container">
+                        <div class="platform-tag" id="platformTag">YouTube</div>
+                        <img id="thumbnail" class="thumbnail" alt="Preview thumbnail">
+                        <div class="options-group" id="qualityOptions">
+                            <div class="option-card active">
+                                <i class="fas fa-star"></i>
+                                <span>Best Quality</span>
+                            </div>
+                            <div class="option-card">
+                                <i class="fas fa-hd"></i>
+                                <span>HD</span>
+                            </div>
+                            <div class="option-card">
+                                <i class="fas fa-film"></i>
+                                <span>720p</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="download-btn" onclick="downloadMedia('video')">
+                            <i class="fas fa-video"></i> Download Video
+                        </button>
+                        <button class="download-btn audio" onclick="downloadMedia('audio')">
+                            <i class="fas fa-music"></i> Download Audio
+                        </button>
+                        <button class="download-btn image" onclick="downloadMedia('image')">
+                            <i class="fas fa-image"></i> Download Image
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="batchTab" style="display: none;">
+                    <div class="input-group">
+                        <label for="batchUrls">Enter URLs (One per line)</label>
+                        <textarea id="batchUrls" placeholder="https://www.instagram.com/p/...
+https://www.tiktok.com/...
+https://twitter.com/..."></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="download-btn" onclick="batchDownload('video')">
+                            <i class="fas fa-video"></i> Download Videos
+                        </button>
+                        <button class="download-btn audio" onclick="batchDownload('audio')">
+                            <i class="fas fa-music"></i> Download Audio
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="features">
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Lightning Fast</h3>
+                    <p>Download videos at maximum speed with our optimized servers and algorithms.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure</h3>
+                    <p>Your data privacy is our priority. We don't store or share your downloads.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-infinity"></i>
+                    <h3>Unlimited</h3>
+                    <p>No restrictions on the number or size of downloads. Get what you need.</p>
+                </div>
+            </div>
+            
+            <div class="downloads-container" id="downloadsContainer">
+                <h2 style="margin-bottom: 20px; text-align: center;">Download Queue</h2>
+                <!-- Downloads will appear here dynamically -->
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 Silva Tech Inc. All rights reserved.</p>
+            <p>Advanced Social Media Downloader | Version 2.0</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random size between 1px and 3px
+                const size = Math.random() * 2 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                // Random animation duration
+                const duration = Math.random() * 20 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.getElementById('singleTab').style.display = 
+                    tab.dataset.tab === 'single' ? 'block' : 'none';
+                document.getElementById('batchTab').style.display = 
+                    tab.dataset.tab === 'batch' ? 'block' : 'none';
+            });
+        });
+        
+        // Option card selection
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            });
+        });
+        
+        // URL input handler with debounce
+        let timeout;
+        document.getElementById('singleUrl').addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(fetchMediaInfo, 800);
+        });
+        
+        // Fetch media info from API
+        async function fetchMediaInfo() {
+            const url = document.getElementById('singleUrl').value.trim();
+            if (!url) {
+                document.getElementById('previewContainer').style.display = 'none';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                
+                const data = await response.json();
+                
+                if (data.thumbnail) {
+                    document.getElementById('thumbnail').src = data.thumbnail;
+                    document.getElementById('platformTag').textContent = 
+                        data.platform.charAt(0).toUpperCase() + data.platform.slice(1);
+                    document.getElementById('previewContainer').style.display = 'block';
+                    
+                    // Add platform-specific options
+                    if (data.options && data.options.length > 0) {
+                        const optionsContainer = document.getElementById('qualityOptions');
+                        optionsContainer.innerHTML = '';
+                        
+                        data.options.forEach((option, index) => {
+                            const card = document.createElement('div');
+                            card.className = `option-card ${index === 0 ? 'active' : ''}`;
+                            card.innerHTML = `
+                                <i class="fas fa-${getOptionIcon(option)}"></i>
+                                <span>${option}</span>
+                            `;
+                            card.addEventListener('click', () => {
+                                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+                                card.classList.add('active');
+                            });
+                            optionsContainer.appendChild(card);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching media info:', error);
+                showNotification('Failed to fetch media info', 'error');
+            }
+        }
+        
+        function getOptionIcon(option) {
+            if (option.includes('HD') || option.includes('4K')) return 'hd';
+            if (option.includes('audio')) return 'music';
+            if (option.includes('image')) return 'image';
+            return 'star';
+        }
+        
+        // Download media
+        async function downloadMedia(mediaType) {
+            const url = document.getElementById('singleUrl').value.trim();
+            if (!url) {
+                showNotification('Please enter a valid URL', 'warning');
+                return;
+            }
+            
+            const downloadBtn = document.querySelector(`.download-btn.${mediaType}`) || 
+                                document.querySelector('.download-btn');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = `<span class="spinner"></span> Processing...`;
+            downloadBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: url,
+                        type: mediaType
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.download_id) {
+                    showNotification('Download started successfully', 'success');
+                    createDownloadItem(data.download_id, url, mediaType);
+                    checkProgress(data.download_id);
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                showNotification(`Download failed: ${error.message}`, 'error');
+            } finally {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }
+        }
+        
+        // Batch download
+        async function batchDownload(mediaType) {
+            const urlsText = document.getElementById('batchUrls').value.trim();
+            if (!urlsText) {
+                showNotification('Please enter at least one URL', 'warning');
+                return;
+            }
+            
+            const urls = urlsText.split('\n').filter(url => url.trim() !== '');
+            const downloadBtn = document.querySelector(`.download-btn.${mediaType}`) || 
+                                document.querySelector('.download-btn');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = `<span class="spinner"></span> Processing...`;
+            downloadBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        urls: urls,
+                        type: mediaType
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.batch_id) {
+                    showNotification(`Started batch download of ${urls.length} items`, 'success');
+                    urls.forEach((url, index) => {
+                        const downloadId = `${data.batch_id}_${index}`;
+                        createDownloadItem(downloadId, url, mediaType);
+                        checkProgress(downloadId);
+                    });
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Batch download error:', error);
+                showNotification(`Batch download failed: ${error.message}`, 'error');
+            } finally {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }
+        }
+        
+        // Create download UI item
+        function createDownloadItem(downloadId, url, mediaType) {
+            const downloadsContainer = document.getElementById('downloadsContainer');
+            const item = document.createElement('div');
+            item.className = 'download-item';
+            item.id = `download-${downloadId}`;
+            item.innerHTML = `
+                <div style="min-width: 40px; text-align: center;">
+                    <i class="fas fa-${mediaType === 'audio' ? 'music' : mediaType === 'image' ? 'image' : 'video'}"></i>
+                </div>
+                <div style="flex: 3; overflow: hidden;">
+                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">${url}</div>
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span>Downloading...</span>
+                            <span id="progress-${downloadId}">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="progress-bar-${downloadId}" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button class="action-btn" id="action-${downloadId}" disabled>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            `;
+            
+            downloadsContainer.appendChild(item);
+        }
+        
+        // Update download progress and handle automatic saving
+        async function checkProgress(downloadId) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/progress/${downloadId}`);
+                    const data = await response.json();
+                    
+                    const progressElement = document.getElementById(`progress-${downloadId}`);
+                    const progressBar = document.getElementById(`progress-bar-${downloadId}`);
+                    const downloadItem = document.getElementById(`download-${downloadId}`);
+                    const actionBtn = document.getElementById(`action-${downloadId}`);
+                    
+                    if (data.error) {
+                        progressElement.textContent = 'Error';
+                        downloadItem.classList.add('error');
+                        clearInterval(interval);
+                        return;
+                    }
+                    
+                    progressElement.textContent = `${Math.round(data.progress)}%`;
+                    progressBar.style.width = `${data.progress}%`;
+                    
+                    if (data.completed) {
+                        progressElement.textContent = 'Processing...';
+                        clearInterval(interval);
+                        
+                        if (data.filename) {
+                            // Automatically download the file
+                            await handleDownloadCompletion(downloadId, data.filename);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Progress check error:', error);
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+        
+        // Handle automatic file download
+        async function handleDownloadCompletion(downloadId, filename) {
+            const item = document.getElementById(`download-${downloadId}`);
+            if (!item) return;
+
+            const progressText = item.querySelector('.progress-info span:first-child');
+            const progressPercent = item.querySelector(`#progress-${downloadId}`);
+            const actionBtn = document.getElementById(`action-${downloadId}`);
+
+            try {
+                progressText.textContent = 'Preparing download...';
+                
+                // Get the file from server
+                const response = await fetch(`/api/file/${filename}`);
+                if (!response.ok) throw new Error('File not found');
+                
+                // Create blob and download automatically
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+
+                progressText.textContent = 'Download complete!';
+                progressPercent.textContent = '100%';
+                item.classList.add('completed');
+                
+                // Enable the action button
+                actionBtn.disabled = false;
+                actionBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                actionBtn.onclick = () => {
+                    window.location.href = `/api/file/${filename}`;
+                };
+                
+                showNotification('File saved automatically', 'success');
+            } catch (error) {
+                progressText.textContent = 'Error saving';
+                progressPercent.textContent = 'Error';
+                item.classList.add('error');
+                showNotification(`Failed to save: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Animation on load
+            document.querySelectorAll('.card, .downloads-container, .features').forEach(el => {
+                el.style.animation = 'none';
+                setTimeout(() => {
+                    el.style.animation = 'slideUp 0.8s ease-out';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
