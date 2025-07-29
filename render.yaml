@@ -2,4 +2,9 @@ services:
   - type: web
     name: sm-downloader-backend
     dockerfile: Dockerfile
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DOWNLOAD_DIR
+        value: /tmp/downloads
     plan: free
