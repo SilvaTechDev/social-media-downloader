@@ -2,17 +2,30 @@ import os
 import re
 import time
 import threading
+import atexit
+import shutil
+from pathlib import Path
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from yt_dlp import YoutubeDL
-from pathlib import Path
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Enable CORS for all routes
 
 # Configuration
-DOWNLOAD_DIR = Path('downloads')
-DOWNLOAD_DIR.mkdir(exist_ok=True)
+DOWNLOAD_DIR = Path(os.getenv('DOWNLOAD_DIR', '/tmp/downloads'))
+DOWNLOAD_DIR.mkdir(exist_ok=True, parents=True)
+
+# Cleanup on exit
+@atexit.register
+def cleanup():
+    """Remove all downloads when server stops"""
+    for item in DOWNLOAD_DIR.glob('*'):
+        try:
+            if item.is_file():
+                item.unlink()
+        except Exception as e:
+            print(f"Error deleting {item}: {e}")
 
 download_progress = {}
 
@@ -28,6 +41,8 @@ def download_media(url, media_type, download_id):
             'quiet': True,
             'nooverwrites': True,
             'continuedl': True,
+            'nopart': True,  # Critical for Render's ephemeral storage
+            'no_cache_dir': True,
         }
 
         if media_type == 'audio':
@@ -84,11 +99,12 @@ def process_download(url, media_type, download_id):
 @app.route('/progress/<download_id>')
 def check_progress(download_id):
     progress = download_progress.get(download_id, 0)
+    files = list(DOWNLOAD_DIR.glob(f'{download_id}_*'))
     return jsonify({
         'progress': progress,
         'completed': progress >= 100,
         'error': progress == -1,
-        'filename': list(DOWNLOAD_DIR.glob(f'{download_id}_*'))[0].name if progress >= 100 else None
+        'filename': files[0].name if files else None
     })
 
 @app.route('/file/<filename>')
@@ -102,5 +118,13 @@ def serve_file(filename):
         
     return send_file(filepath, as_attachment=True)
 
+@app.route('/healthcheck')
+def healthcheck():
+    return jsonify({
+        'status': 'healthy',
+        'download_dir': str(DOWNLOAD_DIR),
+        'free_space': f"{shutil.disk_usage(DOWNLOAD_DIR).free / (1024**2):.2f} MB"
+    })
+
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
