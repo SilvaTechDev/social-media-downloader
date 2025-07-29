@@ -1,7 +1,5 @@
 services:
   - type: web
     name: sm-downloader-backend
-    runtime: python
-    buildCommand: "apt-get update && apt-get install -y ffmpeg && pip install -r requirements.txt"
-    startCommand: "python scripts/api_server.py"
+    dockerfile: Dockerfile
     plan: free
